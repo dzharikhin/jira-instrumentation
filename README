@@ -1,0 +1,23 @@
+This project RnD about embedding instrumentation to Atlassian JIRA Software
+It relates to https://jira.atlassian.com/browse/JRA-63053 and ability to validate general issue context
+'instrumentation-agent' - module which builds javaagent(https://docs.oracle.com/javase/7/docs/api/java/lang/instrument/package-summary.html) that will be loaded first-time instrumentation is installed in JIRA. The only purpose of it is to provide instrumentation instance from the VM
+'instrumentation-provider' - module which builds JIRA add-on. The add-on's function is to attach instrumentation-agent to the VM and to provide OSGi-level API(see InstrumentationConsumer.java) to perform class instrumentations and to install Byte Buddy(https://github.com/raphw/byte-buddy) library OSGi bundle to share Byte Buddy classes to OSGi container
+'issue-validation' - module which builds JIRA add-on. The add-on consumes instrumentation-provider and Byte Buddy API to enhance loaded JIRA classes to provide validation entry point for issue creating and updating. It provides specific API to provide issue validations in OSGi pluggable manner
+In the module 'instrumentation-provider':
+/resources/lib files are described in http://www.oracle.com/technetwork/java/javase/jrereadme-182762.html
+The dynamic attach mechanism consisting of the following files:
+        lib/tools.jar       [All platforms]
+        jre/lib/sparc/libattach.so
+          [Solaris(TM) Operating System (SPARC(R) Platform Edition) and Linux]
+        jre/lib/sparcv9/libattach.so
+          [Solaris(TM) Operating System (SPARC(R) Platform Edition) and Linux]
+        jre/lib/i386/libattach.so
+          [Solaris(TM) Operating System (x86) and Linux]
+        jre/lib/amd64/libattach.so
+          [Solaris(TM) Operating System (AMD) and Linux]
+        jre\bin\attach.dll  [Microsoft Windows]
+So, at the moment tools-[os].jar, libattach.so and attach.dll simply copied from related JDK installations
+AgentInstaller supports at the moment only Windows and AMD linux
+
+Feel free to reapply transformations - they apply to original bytecode each time even though it was already instrumented, even if inline see
+https://github.com/raphw/byte-buddy/issues/206
