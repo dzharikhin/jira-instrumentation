@@ -208,11 +208,9 @@ public class AgentInstaller {
         public void tryToLoadTools(URLClassLoader systemClassLoader, JiraHome jiraHome) throws Exception {
             log.trace("Trying to load tools");
             final File instrumentationDirectory = getInstrumentationDirectory(jiraHome);
-            if (!isLibraryAvailable()) {
-                appendLibPath(instrumentationDirectory.getAbsolutePath());
-                loadFileFromCurrentJar(instrumentationDirectory, getAttachLibFilename());
-                resetCache();
-            }
+            appendLibPath(instrumentationDirectory.getAbsolutePath());
+            loadFileFromCurrentJar(instrumentationDirectory, getAttachLibFilename());
+            resetCache();
             final File tools = loadFileFromCurrentJar(instrumentationDirectory, getToolsFilename());
             final Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
             method.setAccessible(true);
@@ -228,20 +226,10 @@ public class AgentInstaller {
         private void appendLibPath(String instrumentationDirectory) {
             if (System.getProperty("java.library.path") != null) {
                 System.setProperty("java.library.path",
-                    instrumentationDirectory + System.getProperty("path.separator")
-                        + System.getProperty("java.library.path"));
+                    System.getProperty("java.library.path") + System.getProperty("path.separator")
+                        + instrumentationDirectory);
             } else {
                 System.setProperty("java.library.path", instrumentationDirectory);
-            }
-        }
-
-        private boolean isLibraryAvailable() {
-            try {
-                System.loadLibrary(FilenameUtils.removeExtension(getAttachLibFilename()));
-                return true;
-            } catch (UnsatisfiedLinkError e) {
-                log.debug("Attach lib is not available", e);
-                return false;
             }
         }
         protected abstract String getToolsFilename();
