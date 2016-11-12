@@ -21,7 +21,7 @@ public class OSWorkflowManagerCreateIssueAdvice {
     ) {
         try {
             final Plugin plugin = ComponentAccessor.getPluginAccessor().getEnabledPlugin("org.jrx.jira.instrumentation.issue-validation");
-            final Class<?> workflowManagerCreateIssueValidatorClass = plugin != null ? plugin.getClassLoader().loadClass("WorkflowManagerCreateIssueValidatorAggregator") : null;
+            final Class<?> workflowManagerCreateIssueValidatorClass = plugin != null ? plugin.getClassLoader().loadClass("org.jrx.jira.instrumentation.validation.spi.workflowmanager.WorkflowManagerCreateIssueValidatorAggregator") : null;
             final Object workflowManagerCreateIssueValidator = workflowManagerCreateIssueValidatorClass != null ? ComponentAccessor.getOSGiComponentInstanceOfType(workflowManagerCreateIssueValidatorClass) : null;
             if (workflowManagerCreateIssueValidator != null) {
                 final Method validate = workflowManagerCreateIssueValidator.getClass().getMethod("validate", IssueUpdateBean.class, boolean.class);

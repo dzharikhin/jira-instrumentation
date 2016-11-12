@@ -19,7 +19,7 @@ public class DefaultIssueUpdaterAdvice {
     ) {
         try {
             final Plugin plugin = ComponentAccessor.getPluginAccessor().getEnabledPlugin("org.jrx.jira.instrumentation.issue-validation");
-            final Class<?> issueUpdaterValidatorClass = plugin != null ? plugin.getClassLoader().loadClass("IssueUpdaterValidatorAggregator") : null;
+            final Class<?> issueUpdaterValidatorClass = plugin != null ? plugin.getClassLoader().loadClass("org.jrx.jira.instrumentation.validation.spi.issueupdater.IssueUpdaterValidatorAggregator") : null;
             final Object issueUpdaterValidator = issueUpdaterValidatorClass != null ? ComponentAccessor.getOSGiComponentInstanceOfType(issueUpdaterValidatorClass) : null;
             if (issueUpdaterValidator != null) {
                 final Method validate = issueUpdaterValidator.getClass().getMethod("validate", IssueUpdateBean.class, boolean.class);

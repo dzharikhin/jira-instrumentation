@@ -27,7 +27,7 @@ public class DefaultIssueServiceValidateCreateAdvice {
                 //current plugin key
                 final Plugin plugin = ComponentAccessor.getPluginAccessor().getEnabledPlugin("org.jrx.jira.instrumentation.issue-validation");
                 //related aggregator class
-                final Class<?> issueValidatorClass = plugin != null ? plugin.getClassLoader().loadClass("IssueServiceValidateCreateValidatorAggregator") : null;
+                final Class<?> issueValidatorClass = plugin != null ? plugin.getClassLoader().loadClass("org.jrx.jira.instrumentation.validation.spi.issueservice.IssueServiceValidateCreateValidatorAggregator") : null;
                 final Object issueValidator = issueValidatorClass != null ? ComponentAccessor.getOSGiComponentInstanceOfType(issueValidatorClass) : null;
                 if (issueValidator != null) {
                     final Method validate = issueValidator.getClass().getMethod("validate", CreateValidationResult.class, ApplicationUser.class, IssueInputParameters.class);
