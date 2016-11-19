@@ -88,8 +88,6 @@ public class AgentInstaller {
             log.trace("Trying to install tools and agent");
             if (!isProperAgentLoaded()) {
                 log.info("Instrumentation agent is not installed yet or has wrong version");
-                final String pid = getPid();
-                log.debug("Current VM PID={}", pid);
                 final URLClassLoader systemClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
                 log.debug("System classLoader={}", systemClassLoader);
                 final Class<?> virtualMachine = getVirtualMachineClass(
@@ -103,6 +101,8 @@ public class AgentInstaller {
                 Method detach = virtualMachine.getMethod("detach");
                 Object vm = null;
                 try {
+                    final String pid = getPid();
+                    log.debug("Current VM PID={}", pid);
                     log.trace("Attaching to VM with PID={}", pid);
                     vm = attach.invoke(null, pid);
                     final File agentFile = getAgentFile();
@@ -208,10 +208,10 @@ public class AgentInstaller {
         public void tryToLoadTools(URLClassLoader systemClassLoader, JiraHome jiraHome) throws Exception {
             log.trace("Trying to load tools");
             final File instrumentationDirectory = getInstrumentationDirectory(jiraHome);
-            appendLibPath(instrumentationDirectory.getAbsolutePath());
             loadFileFromCurrentJar(instrumentationDirectory, getAttachLibFilename());
-            resetCache();
             final File tools = loadFileFromCurrentJar(instrumentationDirectory, getToolsFilename());
+            appendLibPath(instrumentationDirectory.getAbsolutePath());
+            resetCache();
             final Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
             method.setAccessible(true);
             method.invoke(systemClassLoader, tools.toURI().toURL());
