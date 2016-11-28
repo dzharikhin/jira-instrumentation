@@ -39,19 +39,23 @@ public class IssueServiceValidateUpdateValidatorAggregator implements IssueServi
             log.trace("Executing validate of IssueServiceValidateUpdateValidatorAggregator");
             final Collection<ServiceReference<IssueServiceValidateUpdateValidator>> serviceReferences = bundleContext.getServiceReferences(IssueServiceValidateUpdateValidator.class, null);
             log.debug("Found services: {}", serviceReferences);
-            IssueService.UpdateValidationResult result = originalResult;
-            for (ServiceReference<IssueServiceValidateUpdateValidator> serviceReference : serviceReferences) {
-                final IssueServiceValidateUpdateValidator service = bundleContext.getService(serviceReference);
-                if (service != null) {
-                    result = service.validate(result, user, issueId, issueInputParameters);
-                } else {
-                    log.debug("Failed to get service from {}", serviceReference);
-                }
-            }
-            return result;
+            return getUpdateValidationResult(serviceReferences, originalResult, user, issueId, issueInputParameters);
         } catch (InvalidSyntaxException e) {
             log.warn("Exception on getting IssueServiceValidateUpdateValidator", e);
             return originalResult;
         }
+    }
+
+    private IssueService.UpdateValidationResult getUpdateValidationResult(Collection<ServiceReference<IssueServiceValidateUpdateValidator>> serviceReferences, @Nonnull IssueService.UpdateValidationResult originalResult, ApplicationUser user, Long issueId, IssueInputParameters issueInputParameters) {
+        IssueService.UpdateValidationResult result = originalResult;
+        for (ServiceReference<IssueServiceValidateUpdateValidator> serviceReference : serviceReferences) {
+            final IssueServiceValidateUpdateValidator service = bundleContext.getService(serviceReference);
+            if (service != null) {
+                result = service.validate(result, user, issueId, issueInputParameters);
+            } else {
+                log.debug("Failed to get service from {}", serviceReference);
+            }
+        }
+        return result;
     }
 }

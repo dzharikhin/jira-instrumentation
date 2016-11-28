@@ -45,13 +45,7 @@ public class Loader implements InitializingBean, DisposableBean {
                     final InstrumentationConsumer consumer = bundleContext.getService(serviceReference);
                     log.debug("Consumer: {}", consumer);
                     if (consumer != null) {
-                        final Instrumentation instrumentation;
-                        try {
-                            instrumentation = instrumentationProvider.getInstrumentation();
-                            consumer.applyInstrumentation(instrumentation);
-                        } catch (InstrumentationAgentException e) {
-                            log.error("Error on getting insrumentation", e);
-                        }
+                        applyInstrumentation(consumer, instrumentationProvider);
                     }
                 } catch (Throwable t) {
                     log.error("Error on 'addingService'", t);
@@ -69,6 +63,16 @@ public class Loader implements InitializingBean, DisposableBean {
 
             }
         });
+    }
+
+    private void applyInstrumentation(InstrumentationConsumer consumer, InstrumentationProvider instrumentationProvider) {
+        final Instrumentation instrumentation;
+        try {
+            instrumentation = instrumentationProvider.getInstrumentation();
+            consumer.applyInstrumentation(instrumentation);
+        } catch (InstrumentationAgentException e) {
+            log.error("Error on getting insrumentation", e);
+        }
     }
 
     @Override
